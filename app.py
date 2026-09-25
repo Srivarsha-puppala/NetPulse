@@ -136,14 +136,17 @@ if run_monitoring:
         metric_size.metric("Avg Packet Size", f"{data['Avg Packet Size']:.1f} B")
         metric_devices.metric("Active Devices", f"{data['Device Count']}")
 
-        # 2. Render Active Device IPs
+        # 2. Render active device IPs
         with device_box.container():
             with st.expander("📲 Active Devices Captured in Last Window", expanded=True):
+                device_label = st.empty()
+                device_list = st.empty()
                 if data["Active Devices"]:
-                    st.write("Local IP addresses active on the network:")
-                    st.code(", ".join(data["Active Devices"]), language="text")
+                    device_label.write("Local client IP addresses active on the network:")
+                    device_list.code(", ".join(data["Active Devices"]), language="text")
                 else:
-                    st.write("No active device traffic detected in this interval.")
+                    device_label.empty()
+                    device_list.empty()
 
         # 3. Calculate 3-Sample Rolling Moving Average
         raw_pps = data['Packets per Second (PPS)']
