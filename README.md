@@ -2,24 +2,42 @@
 
 # 🌐 Network Traffic Congestion Predictor
 
-**An end-to-end Machine Learning pipeline for real-time network flow analysis and congestion classification.**
+An intelligent, ML-powered network monitoring dashboard that captures live packet flows, aggregates traffic throughput, and detects network congestion in real-time using a pre-trained **Random Forest** model.network flow analysis and congestion classification.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)
-![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3-orange?style=for-the-badge&logo=scikitlearn)
-![Accuracy](https://img.shields.io/badge/Accuracy-99.94%25-success?style=for-the-badge)
+![Streamlit UI](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Scapy](https://img.shields.io/badge/Scapy-000000?style=for-the-badge)
+![Scikit-Learn](https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
 
 </div>
 
 ---
 
-## 📌 Features
+## 💡 Overview
+This application acts as a light-weight intrusion and throughput monitor. It captures local network packets in 2-second sampling windows, processes traffic features, and predicts whether the network is experiencing congestion or operating normally.
+---
 
-- ⚡ **Real-Time Classification:** Instantly classifies network flows as `NORMAL` or `CONGESTED`.
-- 📊 **Explainable AI:** Feature importance scoring highlights key network drivers (Packets Per Second).
-- 💻 **Interactive CLI:** Live terminal interface for manual parameter testing.
-- 💾 **Model Serialization:** Reusable binary weights exported via `joblib`.
+## Key Features
+**Live Network Sniffing:** Uses scapy to continuously sniff active network traffic on selected interfaces (Wi-Fi, Ethernet, Hotspot).
+
+**Private IP Filtering:** Filters traffic strictly within private local subnets (172.x.x.x, 192.168.x.x, 10.x.x.x) to eliminate public internet noise.
+
+**ML-Based Congestion Inference:** Employs a pre-trained Random Forest Classifier to assess throughput parameters and assign a congestion confidence score.
+
+**Dynamic, Flicker-Free UI:** Built with Streamlit's st.empty() container scaffolding to ensure real-time metric cards, active device lists, and line charts update seamlessly without UI flickering.
+
 
 ---
+## 📊 Monitored Metrics
+
+The dashboard evaluates traffic over rolling 2-second windows using four core features:
+
+| Metric | Feature Description |
+| :--- | :--- | 
+| **Packets / Sec (PPS)** | Total network packets captured per second. | 
+| **Total Bytes Captured** | Combined payload size of all packets in the sampling window.|
+| **Avg Packet Size** | Mean packet byte size (Total Bytes / Total Packets) | 
+| **Active Devices** | Total unique private IP addresses active during the sampling interval |
 
 ## 📊 Feature Importance Breakdown
 
