@@ -49,4 +49,4 @@ def process_packet(packet):
             start_time = time.time()
 
 print("\n🌐 Starting Live Network Sniffer (Press Ctrl+C to stop)...")
-sniff(prn=process_packet, store=False)
+sniff(prn=process_packet, store=False)ru  
