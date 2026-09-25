@@ -1,12 +1,12 @@
 import os
 import time
+import ipaddress
 import pandas as pd
 import numpy as np
 import streamlit as st
 import joblib
 from scapy.all import sniff
 from scapy.layers.inet import IP
-from scapy.layers.l2 import Ether
 
 # ---------------------------------------------------------
 # Page Configuration & UI Layout
@@ -65,11 +65,12 @@ class PacketAggregator:
         self.packet_count += 1
         self.total_bytes += len(packet)
 
-        # Track layer 3 IP or layer 2 MAC addresses
+        # Count each active device by its unique local IP address.
         if packet.haslayer(IP):
-            self.active_devices.add(packet[IP].src)
-        elif packet.haslayer(Ether):
-            self.active_devices.add(packet[Ether].src)
+            source_ip = ipaddress.ip_address(packet[IP].src)
+            if (source_ip.is_private and not source_ip.is_loopback
+                    and not source_ip.is_multicast and not source_ip.is_unspecified):
+                self.active_devices.add(str(source_ip))
 
     def get_metrics(self):
         metrics = {
@@ -95,7 +96,7 @@ metric_size = col3.empty()
 metric_devices = col4.empty()
 
 status_box = st.empty()
-device_list_box = st.expander("📲 Active Devices Captured in Last Window", expanded=True)
+device_box = st.empty()
 chart_box = st.empty()
 
 # Initialize session state for rolling charts
@@ -135,13 +136,14 @@ if run_monitoring:
         metric_size.metric("Avg Packet Size", f"{data['Avg Packet Size']:.1f} B")
         metric_devices.metric("Active Devices", f"{data['Device Count']}")
 
-        # 2. Render Active Device IPs / MACs
-        with device_list_box:
-            if data["Active Devices"]:
-                st.write("IPs/MACs currently active on network channel:")
-                st.code(", ".join(data["Active Devices"]), language="text")
-            else:
-                st.write("No active device traffic detected in this interval.")
+        # 2. Render Active Device IPs
+        with device_box.container():
+            with st.expander("📲 Active Devices Captured in Last Window", expanded=True):
+                if data["Active Devices"]:
+                    st.write("Local IP addresses active on the network:")
+                    st.code(", ".join(data["Active Devices"]), language="text")
+                else:
+                    st.write("No active device traffic detected in this interval.")
 
         # 3. Calculate 3-Sample Rolling Moving Average
         raw_pps = data['Packets per Second (PPS)']
