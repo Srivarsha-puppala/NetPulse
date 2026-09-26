@@ -39,27 +39,37 @@ The dashboard evaluates traffic over rolling 2-second windows using four core fe
 | **Avg Packet Size** | Mean packet byte size (Total Bytes / Total Packets) | 
 | **Active Devices** | Total unique private IP addresses active during the sampling interval |
 
-## 📊 Feature Importance Breakdown
+## 🏗️ System Architecture
+```text
+[ Connected Devices ]
+    (Laptop / Phones)
+           │
+           ▼
+ [ Network Interface ] (Wi-Fi / Ethernet)
+           │
+           ▼
+ [ Scapy Sniffer ] ───> 2-Second Sampling Window
+                               │
+                               ▼
+                   [ Local IP & Feature Extractor ]
+                               │
+                               ▼
+                   [ Random Forest Model ]
+                               │
+                               ▼
+                   [ Streamlit Dynamic UI ]
 
-| Network Metric | Importance Score | Impact |
-| :--- | :--- | :--- |
-| **Packets per Second (PPS)** | `0.570` | Primary Congestion Driver (~57%) |
-| **Packet Size** | `0.197` | Secondary Factor (~20%) |
-| **Traffic Volume (Bytes)** | `0.127` | Moderate Impact (~13%) |
-| **Flow Duration** | `0.106` | Minimal Impact (~10%) |
-
----
-
+```
 ## 📁 Repository Structure
 ```
 D:\ML
 
-├── preprocessed_dataset.csv   # Network traffic dataset
-├── train_model.py            # Model training &serialization
-├── congestion_model.pkl      # Saved Random Forest model
-├── predict.py                 # Static test predictions script
-├── check_importance.py        # Feature importance inspector
-├── interactive_predict.py     # Interactive CLI tool
+
+├── app.py                     # Main Streamlit dashboard & Scapy packet pipeline
+├── train_model.py             # Model training & serialization script
+├── preprocessed_dataset.csv   # Network traffic dataset used for ML model
+├── congestion_model.pkl       # Pre-trained Random Forest model
+├── requirements.txt           # Project dependencies
 └── README.md                  # Project documentation
 ``` 
 ---
@@ -70,41 +80,31 @@ D:\ML
 * **Python:** Version 3.10 or higher
 * **OS:** Windows 11 / Linux / macOS
 
-### Required Packages
-Install all necessary dependencies via `pip`:
+## Installation
+1. **Clone the repository**
+```
+git clone [https://github.com/Srivarsha-puppala/NetPulse.git](https://github.com/Srivarsha-puppala/NetPulse.git)
+cd NetPulse
+```
+2. **Dependencies**
 
-```bash
-pip install pandas scikit-learn joblib
+Install all necessary dependencies via pip:
 
 ```
+
+pip install streamlit scapy pandas scikit-learn joblib
+```
+
+
+
 ---
 
 ## 🚀 How to Run
-
-### 1. Run Interactive Prediction Tool (CLI)
-Test custom telemetry inputs manually with instant feedback and probability scoring:
-```bash
-python interactive_predict.py
+Run the live ML-powered Streamlit web interface:
 ```
-### 2. Inspect Feature Importance
-Evaluate how much each network metric impacts the decision tree calculations:
-
-```Bash
-python check_importance.py
+streamlit run app.py
 ```
-### 3. Run Static Automated Tests
-Execute predefined synthetic test scenarios against the serialized binary model:
-
-```Bash
-python predict.py
-```
-### 4. Retrain the Pipeline
-Train the Random Forest classifier from scratch and regenerate congestion_model.pkl:
-
-```Bash
-python train_model.py
-```
----
+ensure your VS Code terminal or Command Prompt is opened with "Run as Administrator" so scapy can capture Wi-Fi packets without permission errors.
 
 ## 💡 Engineering Workflow
 
